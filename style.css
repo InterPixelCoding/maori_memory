@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    font-family: "DM Sans", sans-serif;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 2.5rem;
+}
+
+.tiles {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    perspective: 800px;
+}
+
+.tiles > .tile {
+    position: absolute;
+    aspect-ratio: 1 / 1;
+    border-radius: .5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: sans-serif;
+    font-size: 2rem;
+
+    border: 1px solid black;
+    background: white;
+
+    cursor: pointer;
+
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: all 4s ease;
+}
+
+.tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+
+    background: red;
+    border-radius: .5rem;
+
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+}
+
+.tile.reveal {
+    border-radius: 0rem;
+}
+
+.tile:not(.reversed) {
+    transform: rotate(var(--rotation));
+}
+
+.reversed.reveal {
+    transform: scaleX(-1) rotate(var(--rotation));
+}
