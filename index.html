@@ -8,9 +8,31 @@
     <title>Maori Memory</title>
 </head>
 <body>
-    <header><h1>Maori Memory</h1></header>
+    <dialog open>
+        <h1>Welcome to Blake's Maori Memory Game!</h1>
+        <span>Find the matching tiles by flipping two over at a time. Select your difficulty below to begin!</span>
+        <div class="difficulties">
+            <span class="active">Easy</span>
+            <span>Medium</span>
+            <span>Hard</span>
+            <span>Extra Hard</span>
+        </div>
+        <div class="slider">
+            <div class="thumb-track"></div>
+        </div>
+        <h3>This gamemode features</h3>
+        <div class="info">
+            <ul class="easy">
+                <li>8 pairs of tiles</li>
+                <li>Colourful tiles</li>
+                <li>All tiles the same way up (no rotation)</li>
+                <li>Average playtime of 1 minute</li>
+            </ul>
+        </div>
+        <button class="start-game">Begin!</button>
+    </dialog>
     <div class="game-container">
-        <div class="tiles" data-grid-size="4" data-grid-gap="5"></div>
+        <div class="tiles" data-grid-size="4" data-grid-gap="3" data-src="./tiles/picture_2.jpg"></div>
     </div>
 </body>
 </html>
