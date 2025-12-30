@@ -1,0 +1,58 @@
+.difficulties {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    min-height: fit-content;
+    height: 1.5em;
+    margin-bottom: -1.75rem;
+    overflow: hidden;
+    font-size: 3rem;
+    perspective: 200px;
+    transform-style: preserve-3d;
+}
+
+.difficulties > span {
+    width: 100%;
+    position: absolute;
+    transform: rotateX(-90deg);
+    opacity: 0;
+    transform-origin: center center -1.5rem;
+    transition: 500ms ease all;
+}
+
+.difficulties > span.active {
+    transform: rotateX(0deg);
+    opacity: 1;
+}
+
+.difficulties > span.deactivating {
+    transform: rotateX(90deg);
+}
+
+.slider {
+    position: relative;
+    margin-block: 1rem;
+    height: 1.25rem;
+    background: rgb(235, 235, 235);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-radius: 3rem;
+}
+
+.slider > .thumb-track {
+    position: absolute;
+    touch-action: none;
+    left: 20px;
+    transform: translate(-50%, -50%);
+    height: 3.25rem;
+    top: .4rem;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    background: rgb(255, 116, 116);
+    filter: hue-rotate(95deg);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 0 0 0.3rem white;
+    transition: filter 500ms ease,
+                left 250ms ease;
+}

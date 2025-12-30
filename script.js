@@ -1,10 +1,27 @@
-const tiles_container = document.querySelector(".tiles");
+function el(str) {
+    let dom_el;
+    if(str.includes(".")) {
+        const split_str = str.split(".");
+        const class_names = split_str[1].split(",");
+        dom_el = document.createElement(split_str[0]);
+        for(let i = 0; i<class_names.length; i++) dom_el.classList.add(class_names[i]);
+    } else {
+        dom_el = document.createElement(str);
+    }
+    
+    return dom_el;
+}
+
+function $(str) {return document.querySelector(str)}
+
+const tiles_container = $(".tiles");
 const gamemodes = [
     {
         gamemode: "Easy",
         grid_size: 4,
         is_colours: 1,
         is_rotation: 0,
+        avg_playtime: "1",
         hue: 95,
     },
     {
@@ -12,6 +29,7 @@ const gamemodes = [
         grid_size: 4,
         is_colours: 0,
         is_rotation: 0,
+        avg_playtime: "2-3",
         hue: 25,
     },
     {
@@ -19,6 +37,7 @@ const gamemodes = [
         grid_size: 6,
         is_colours: 1,
         is_rotation: 0,
+        avg_playtime: "4-5",
         hue: -55,
     },
     {
@@ -26,21 +45,63 @@ const gamemodes = [
         grid_size: 6,
         is_colours: 0,
         is_rotation: 1,
+        avg_playtime: "8-10",
         hue: -105,
-    }
+    },
+    
 ]
 
-let difficulty = gamemodes[0];
+const info_formatters = {
+    grid_size: value => `${value * value / 2} Pairs`,
+    is_colours: value => value ? "Colourful Tiles" : "No Colours",
+    is_rotation: value => value
+        ? "Tiles are randomly rotated"
+        : "All tiles are the same way up",
+        avg_playtime: value =>
+        `Average playtime of ${value} minute${value === "1" ? "" : "s"}`
+};
 
+const gamemodes_container = $(".difficulties");
+const info = $(".info");
 const testing = false;
-const grid_size = difficulty.grid_size;
 const grid_gap = tiles_container.getAttribute("data-grid-gap");
 const image_src = tiles_container.getAttribute("data-src");
-const thumb_track = document.querySelector(".slider > .thumb-track");
+const thumb_track = $(".slider > .thumb-track");
 const slider = thumb_track.parentElement;
+const start_game = $(".start-game")
+const info_padding = 10;
+const modal = $("dialog")
+
+generate_gamemode_info();
+
 const gamemode_spans = document.querySelectorAll(".difficulties > span");
-let tiles = mirrored_arr();
-let tile_order = Array.from(tiles.keys());
+
+function generate_gamemode_info() {
+    gamemodes.forEach(function(gamemode, index) {
+        const span = el("span");
+        span.textContent = gamemode.gamemode;
+        gamemodes_container.appendChild(span);
+        
+        const list = el(`ul.${gamemode.gamemode.replace(" ", "-").toLowerCase()}`);
+        
+        Object.entries(info_formatters).forEach(function([key, formatter]) {
+            const list_item = el("li");
+            list_item.textContent = formatter(gamemode[key]);
+            list.appendChild(list_item);
+        });
+        
+        info.appendChild(list);
+
+        if(index === 0) {
+            activate(span)
+            info.style.setProperty("--info-height", list.offsetHeight + info_padding + "px");
+        }
+
+        list.style.setProperty("--initial-rotation", "-90deg");
+    });
+    
+    activate(info.children[0]);
+}
 
 function shuffle(array) {
     // The de-facto unbiased shuffle algorithm is the Fisher–Yates (aka Knuth) Shuffle.
@@ -60,15 +121,7 @@ function shuffle(array) {
     }
 }
 
-function el(str) {
-    const split_str = str.split(".");
-    const class_names = split_str[1].split(",");
-    const dom_el = document.createElement(split_str[0]);
-    for(let i = 0; i<class_names.length; i++) dom_el.classList.add(class_names[i]);
-    return dom_el;
-}
-
-function generate_tiles(testing) {
+function generate_tiles(grid_size, tiles, testing) {
     tiles.forEach(function(val, index) {
         const tile = el("div.tile");
         tile.style.backgroundImage = `url(${image_src})`;
@@ -78,11 +131,12 @@ function generate_tiles(testing) {
             tile.textContent = str;
         } 
         tile.style.zIndex = tiles.length - index;
+        tile.style.display = "none";
         tiles_container.appendChild(tile);
     })
 }
 
-function mirrored_arr() {
+function mirrored_arr(grid_size) {
     let tiles = [];
     for (let i = 0; i < grid_size ** 2; i++) {
         let row = Math.floor(i / grid_size);
@@ -95,9 +149,9 @@ function mirrored_arr() {
     return tiles;
 }
 
-function reveal_tiles() {
+function reveal_tiles(grid_size, tiles, difficulty) {
     tile_order = Array.from(tiles.keys());
-    display_tiles(tile_order, reveal = true);
+    display_tiles(grid_size, tile_order, difficulty, tiles, reveal = true);
 }
 
 function tile_transforms(tile, pos, tile_size, container_width, offset_pos) {
@@ -109,7 +163,7 @@ function tile_transforms(tile, pos, tile_size, container_width, offset_pos) {
     tile.style.setProperty("--tile-offset", `${-offset_pos.left - 1}px ${-offset_pos.top - 3}px`); // 2px offset due to bottom of image repeating at top
 }
 
-function calculate_grid_pos(image_based, index, tile_order, parsed_gap, tile_size) {
+function calculate_grid_pos(grid_size, image_based, index, tile_order, parsed_gap, tiles, tile_size) {
     let row; let col;
 
     if(image_based) {
@@ -127,7 +181,7 @@ function calculate_grid_pos(image_based, index, tile_order, parsed_gap, tile_siz
     return {left, top}
 }
 
-function display_tiles(tile_order, reveal=false) {
+function display_tiles(grid_size, tile_order, difficulty, tile_arr, reveal=false) {
     const tiles = document.querySelectorAll(".tiles > .tile");
     let parsed_gap = parseInt(grid_gap);
     if(reveal) parsed_gap = 0
@@ -137,19 +191,23 @@ function display_tiles(tile_order, reveal=false) {
     const tile_size = (container_width - total_gap_width) / grid_size;
 
     tiles.forEach(function(tile, index) {
-        const pos = calculate_grid_pos(image_based = false, index, tile_order, parsed_gap, tile_size);
-        const offset_pos = calculate_grid_pos(image_based = true, index, tile_order, parsed_gap, tile_size);
+        const pos = calculate_grid_pos(grid_size, image_based = false, index, tile_order, parsed_gap, tile_arr, tile_size);
+        const offset_pos = calculate_grid_pos(grid_size, image_based = true, index, tile_order, parsed_gap, tile_arr, tile_size);
         if(!reveal) {
             tile.style.setProperty("--rotation", Math.floor(Math.random() * 4) * 90 * difficulty.is_rotation + "deg"); // random rotation, chooses between 0, 90, 180, 270;
+            tile.style.setProperty("--bg-colour", `hsl(${difficulty.is_colours * (360 / (grid_size**2 / 2) * tile_arr[index])}deg ${30 * difficulty.is_colours}% 40%)`);
             tile_transforms(tile, pos, tile_size, container_width, offset_pos);
+            tile.style.display = "initial";
         } else {
             setTimeout(() => {
                 tile_transforms(tile, pos, tile_size, container_width, offset_pos);
                 tile.style.setProperty("--rotation", "0deg");
+                tile.style.setProperty("--bg-colour", "hsl(0deg 0% 0%)");
                 tile.classList.add("reveal")
             }, index * 100);
         }
     });
+
 }
 
 function activate(el) {
@@ -176,61 +234,71 @@ function deactivate(el) {
     });
 }
 
-function slider_span_offset(val) {
-    console.log(val);
-}
+async function starting_menu() {
+    return new Promise((resolve) => {
+        const margin = 20;
+        const steps = gamemodes.length - 1;
+        let previous_gamemode = gamemode_spans[0];
+        let difficulty = gamemodes[0]
 
-function slider_logic() {
-    const margin = 20;
-    const steps = gamemodes.length - 1;
-    let previous_gamemode = gamemode_spans[0];
-    let difficulty;
+        function get_slider_state(client_x) {
+            const left = slider.offsetLeft + margin;
+            const right = slider.offsetLeft + slider.offsetWidth - margin;
+            const width = right - left;
 
-    function get_slider_state(client_x) {
-        const left = slider.offsetLeft + margin;
-        const right = slider.offsetLeft + slider.offsetWidth - margin;
-        const width = right - left;
+            const x = Math.min(Math.max(client_x, left), right);
+            const t = (x - left) / width; // 0 → 1
+            const step_index = Math.round(t * steps);
 
-        const x = Math.min(Math.max(client_x, left), right);
-        const t = (x - left) / width; // 0 → 1
-        const step_index = Math.round(t * steps);
-
-        return { x, t, step_index, width };
-    }
-
-    thumb_track.addEventListener("pointermove", (e) => {
-        const { x, step_index, width } = get_slider_state(e.clientX);
-        difficulty = gamemodes[step_index];
-
-        if(gamemode_spans[step_index] !== previous_gamemode) {
-            deactivate(previous_gamemode);
-            activate(gamemode_spans[step_index]);
-            previous_gamemode = gamemode_spans[step_index];
-            thumb_track.style.filter = `hue-rotate(${difficulty.hue}deg)`;
+            return { x, t, step_index, width };
         }
-           
-        thumb_track.style.left = `${x - slider.offsetLeft}px`;
 
-    });
+        thumb_track.addEventListener("pointermove", (e) => {
+            const { x, step_index, width } = get_slider_state(e.clientX);
+            difficulty = gamemodes[step_index];
 
-    thumb_track.addEventListener("pointerout", (e) => {
-        const { step_index, width } = get_slider_state(e.clientX);
-        difficulty = gamemodes[step_index];
+            if(gamemode_spans[step_index] !== previous_gamemode) {
+                let current_gamemode = gamemode_spans[step_index];
+                deactivate($(`.info > ul.${previous_gamemode.textContent.replace(" ","-").toLowerCase()}`));
+                deactivate(previous_gamemode);
+                activate(current_gamemode);
+                activate($(`.info > ul.${current_gamemode.textContent.replace(" ","-").toLowerCase()}`));
+                previous_gamemode = current_gamemode;
+                thumb_track.style.filter = `hue-rotate(${difficulty.hue}deg)`;
+            }
+            
+            thumb_track.style.left = `${x - slider.offsetLeft}px`;
 
-        thumb_track.style.left = `${
-            (step_index / steps) * width + margin
-        }px`;
-    });
+        });
+
+        thumb_track.addEventListener("pointerout", (e) => {
+            const { step_index, width } = get_slider_state(e.clientX);
+            difficulty = gamemodes[step_index];
+
+            thumb_track.style.left = `${
+                (step_index / steps) * width + margin
+            }px`;
+        });
+
+        start_game.addEventListener("click", () => {
+            resolve(difficulty);
+        })
+    })
 }
 
+starting_menu()
+.then((res) => {game_setup(res)})
 
-
-function game_setup() {
-    
+function game_setup(obj) {
+    let grid_size = obj.grid_size;
+    let tiles = mirrored_arr(grid_size);
+    let tile_order = Array.from(tiles.keys());
+    shuffle(tile_order);
+    generate_tiles(grid_size, tiles, testing);
+    display_tiles(grid_size, tile_order, obj, tiles);
+    modal.close();
+    setTimeout(() => {
+        reveal_tiles(grid_size, tiles, obj);
+    }, 2000);
 }
 
-slider_logic();
-
-generate_tiles(testing);
-shuffle(tile_order);
-display_tiles(tile_order);

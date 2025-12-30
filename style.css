@@ -6,6 +6,10 @@
     box-sizing: border-box;
 }
 
+:root {
+    --initial-rotation: 0deg;
+}
+
 body {
     height: 100vh;
     width: 100%;
@@ -28,6 +32,16 @@ body {
     perspective: 400px;
 }
 
+.tiles > .tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bg-colour);
+    mix-blend-mode: screen;
+    transition: all 3s ease;
+    z-index: 1;
+}
+
 .tiles > .tile {
     position: absolute;
     aspect-ratio: 1 / 1;
@@ -41,7 +55,6 @@ body {
     font-size: 2rem;
 
     border: 1px solid;
-    border-color: rgba(0, 0, 0, 0.5);
     background-size: var(--image-size);
     background-position: var(--tile-offset);
     background-repeat: repeat-x;
@@ -68,7 +81,7 @@ body {
 .tile.reveal {
     border-radius: 0rem;
     border-color: rgba(0,0,0,0);
-    scale: 1.01;
+    scale: 1.03;
 }
 
 .tile:not(.reversed) {
@@ -80,14 +93,22 @@ body {
 }
 
 dialog {
+    position: fixed;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     padding: 2.125rem;
-    z-index: 100;
     background: white;
     border: 0;
     border-radius: 0;
+    z-index: 100;
+    transform: translateY(-100vh);
+    transition: transform 1s ease;
+}
+
+dialog:open {
+    transform: translateY(0vh);
 }
 
 dialog > * {
@@ -95,60 +116,45 @@ dialog > * {
     text-align: center;
 }
 
-.difficulties {
-    display: flex;
+.info {
     position: relative;
-    flex-direction: column;
-    height: 1.5em;
-    margin-bottom: -1.5rem;
-    overflow: hidden;
-    font-size: 3rem;
-    perspective: 200px;
+    height: var(--info-height);
+    text-align: left;
     transform-style: preserve-3d;
+    perspective: 500px;
 }
 
-.difficulties > span {
-    width: 100%;
+.info > ul {
     position: absolute;
-    transform: rotateX(-90deg);
+    top: 0;
+    left: 2rem;
+    transform: rotateY(var(--initial-rotation));
+    transform-origin: center center -5rem;
     opacity: 0;
-    transform-origin: center center -1.5rem;
-    transition: 500ms ease all;
+    transition: transform 500ms ease,
+                opacity 250ms ease;
 }
 
-.difficulties > span.active {
-    transform: rotateX(0deg);
+.info > ul.active {
+    transform: rotateY(0deg);
     opacity: 1;
 }
 
-.difficulties > span.deactivating {
-    transform: rotateX(90deg);
+.info > ul.deactivating {
+    transform: rotateY(90deg);
 }
 
-.slider {
-    position: relative;
-    margin-block: 1rem;
-    height: 1.25rem;
-    background: rgb(235, 235, 235);
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(0, 0, 0, 0.25);
-    border-radius: 3rem;
-}
+dialog > h3 {margin: 0; height: fit-content;}
 
-.slider > .thumb-track {
-    position: absolute;
-    touch-action: none;
-    left: 20px;
-    transform: translate(-50%, -50%);
-    height: 3.25rem;
-    top: .4rem;
-    border-radius: 50%;
-    aspect-ratio: 1 / 1;
-    background: rgb(255, 116, 116);
-    filter: hue-rotate(95deg);
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(0, 0, 0, 0.25);
-    box-shadow: inset 0 0 0 0.3rem white;
-    transition: filter 500ms ease,
-                left 250ms ease;
+.start-game {
+    margin: auto auto 0 auto;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.75rem;
+    width: fit-content;
+    font-family: inherit;
+    color: black;
+    background: linear-gradient(white, rgba(0, 0, 0, 0.2));
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.25);
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: .5rem;
 }
