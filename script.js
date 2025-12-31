@@ -68,7 +68,7 @@ const grid_gap = tiles_container.getAttribute("data-grid-gap");
 const image_src = tiles_container.getAttribute("data-src");
 const thumb_track = $(".slider > .thumb-track");
 const slider = thumb_track.parentElement;
-const start_game = $(".start-game")
+const start_game_button = $(".start-game")
 const info_padding = 10;
 const modal = $("dialog")
 
@@ -195,7 +195,7 @@ function display_tiles(grid_size, tile_order, difficulty, tile_arr, reveal=false
         const offset_pos = calculate_grid_pos(grid_size, image_based = true, index, tile_order, parsed_gap, tile_arr, tile_size);
         if(!reveal) {
             tile.style.setProperty("--rotation", Math.floor(Math.random() * 4) * 90 * difficulty.is_rotation + "deg"); // random rotation, chooses between 0, 90, 180, 270;
-            tile.style.setProperty("--bg-colour", `hsl(${difficulty.is_colours * (360 / (grid_size**2 / 2) * tile_arr[index])}deg ${30 * difficulty.is_colours}% 40%)`);
+            tile.style.setProperty("--bg-colour", `hsl(${difficulty.is_colours * (360 / (grid_size**2 / 2) * tile_arr[index])}deg ${30 * difficulty.is_colours}% ${40 * difficulty.is_colours}%)`);
             tile_transforms(tile, pos, tile_size, container_width, offset_pos);
             tile.style.display = "initial";
         } else {
@@ -280,10 +280,14 @@ async function starting_menu() {
             }px`;
         });
 
-        start_game.addEventListener("click", () => {
+        start_game_button.addEventListener("click", () => {
             resolve(difficulty);
         })
     })
+}
+
+function start_game() {
+    const tiles = document.querySelectorAll(".tiles > .tile");
 }
 
 starting_menu()
@@ -297,8 +301,6 @@ function game_setup(obj) {
     generate_tiles(grid_size, tiles, testing);
     display_tiles(grid_size, tile_order, obj, tiles);
     modal.close();
-    setTimeout(() => {
-        reveal_tiles(grid_size, tiles, obj);
-    }, 2000);
+    start_game(); 
 }
 

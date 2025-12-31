@@ -61,6 +61,8 @@ body {
 
     cursor: pointer;
 
+
+    transform: rotate(var(--rotation));
     transform-style: preserve-3d;
     backface-visibility: hidden;
     transition: all 3s ease;
@@ -82,10 +84,6 @@ body {
     border-radius: 0rem;
     border-color: rgba(0,0,0,0);
     scale: 1.03;
-}
-
-.tile:not(.reversed) {
-    transform: rotate(var(--rotation));
 }
 
 .reversed.reveal {
