@@ -39,10 +39,13 @@ body {
     background: var(--bg-colour);
     mix-blend-mode: screen;
     transition: all 3s ease;
-    z-index: 1;
+    transform-origin: var(--transform-origin);
+    backface-visibility: hidden;
 }
 
 .tiles > .tile {
+    --flip: 180deg;
+
     position: absolute;
     aspect-ratio: 1 / 1;
     border-radius: .25rem;
@@ -61,12 +64,14 @@ body {
 
     cursor: pointer;
 
-
-    transform: rotate(var(--rotation));
+    transform: rotate(var(--rotation, 0deg)) rotateY(var(--flip, 0deg));
     transform-style: preserve-3d;
-    backface-visibility: hidden;
-    transition: all 3s ease;
+    transform-origin: var(--transform-origin);
+    backface-visibility: visible;
+    transition: transform 500ms ease;
 }
+
+.tile.active {--flip: 0deg}
 
 .tile::after {
     content: '';
@@ -77,6 +82,7 @@ body {
     border-radius: .5rem;
 
     transform: rotateY(180deg);
+    transform-origin: var(--transform-origin);
     backface-visibility: hidden;
 }
 
@@ -87,7 +93,7 @@ body {
 }
 
 .reversed.reveal {
-    transform: scaleX(-1) rotate(var(--rotation));
+    transform: scaleX(-1) rotate(var(--rotation)) rotateY(var(--flip, 0deg));
 }
 
 dialog {

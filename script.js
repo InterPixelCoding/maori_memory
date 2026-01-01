@@ -18,7 +18,7 @@ const tiles_container = $(".tiles");
 const gamemodes = [
     {
         gamemode: "Easy",
-        grid_size: 4,
+        grid_size: 2,
         is_colours: 1,
         is_rotation: 0,
         avg_playtime: "1",
@@ -193,6 +193,7 @@ function display_tiles(grid_size, tile_order, difficulty, tile_arr, reveal=false
     tiles.forEach(function(tile, index) {
         const pos = calculate_grid_pos(grid_size, image_based = false, index, tile_order, parsed_gap, tile_arr, tile_size);
         const offset_pos = calculate_grid_pos(grid_size, image_based = true, index, tile_order, parsed_gap, tile_arr, tile_size);
+        tile.style.setProperty("--transform-origin", `${container_width / 2}px ${container_width / 2}px center`);
         if(!reveal) {
             tile.style.setProperty("--rotation", Math.floor(Math.random() * 4) * 90 * difficulty.is_rotation + "deg"); // random rotation, chooses between 0, 90, 180, 270;
             tile.style.setProperty("--bg-colour", `hsl(${difficulty.is_colours * (360 / (grid_size**2 / 2) * tile_arr[index])}deg ${30 * difficulty.is_colours}% ${40 * difficulty.is_colours}%)`);
@@ -201,6 +202,7 @@ function display_tiles(grid_size, tile_order, difficulty, tile_arr, reveal=false
         } else {
             setTimeout(() => {
                 tile_transforms(tile, pos, tile_size, container_width, offset_pos);
+                tile.style.transition = "all 3s ease";
                 tile.style.setProperty("--rotation", "0deg");
                 tile.style.setProperty("--bg-colour", "hsl(0deg 0% 0%)");
                 tile.classList.add("reveal")
@@ -286,8 +288,21 @@ async function starting_menu() {
     })
 }
 
-function start_game() {
-    const tiles = document.querySelectorAll(".tiles > .tile");
+async function start_game(grid_size, tile_order) {
+    return new Promise((resolve) => {
+        console.log(tile_order)
+        let pairs_flipped = [];
+        let currently_flipped = [];
+        const tiles = document.querySelectorAll(".tiles > .tile");
+        tiles.forEach(function(tile, index) {
+            tile.addEventListener("click", () => {
+                if(currently_flipped.length < 100) {
+                    console.log(index)
+                    activate(tile);
+                }
+            })
+        })
+    })
 }
 
 starting_menu()
@@ -301,6 +316,7 @@ function game_setup(obj) {
     generate_tiles(grid_size, tiles, testing);
     display_tiles(grid_size, tile_order, obj, tiles);
     modal.close();
-    start_game(); 
+    start_game(grid_size, tile_order)
+    // .then((reveal_tiles(tiles)))
 }
 
