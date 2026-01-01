@@ -9,7 +9,7 @@
     <title>Maori Memory</title>
 </head>
 <body>
-    <dialog open>
+    <dialog class="menu" open>
         <h1>Welcome to Blake's Maori Memory Game!</h1>
         <span>Find the matching tiles by flipping two over at a time. Select your difficulty below to begin!</span>
         <div class="difficulties"></div>
@@ -21,8 +21,29 @@
         </div>
         <button class="start-game">Start Game</button>
     </dialog>
-    <div class="game-container">
-        <div class="tiles" data-grid-size="6" data-grid-gap="3" data-src="./tiles/picture_3.jpg"></div>
+    <div class="flex wrapper">
+        <div class="game-container">
+            <div class="tiles" data-grid-size="6" data-grid-gap="" data-src="./tiles/picture_3.jpg"></div>
+        </div>
+        <div class="controls flex">        
+            <button class="restart active">Change difficulty</button>
+            <button class="give-up">Give Up</button>
+        </div>
+        <dialog class="end-game">
+            <h2>Congratulations on Completing the Maori Memory Game! <br> But wait... there's more!</h2>
+            <button class="restart">Change difficulty</button>
+            <button class="reveal-btn">Click to reveal the bigger picture</button>
+        </dialog>
+        <div class="card-container">
+            <h2>Dear Sir / Madam</h2>
+            <p>Thank you very much for the Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit incidunt corporis rerum quo ex delectus soluta molestiae? Esse blanditiis deserunt, nam possimus exercitationem autem magnam?</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo facilis placeat unde esse sed ratione fugit? Eveniet voluptas voluptates at molestiae labore facere delectus eius. Velit nulla aut blanditiis quo nisi numquam cupiditate obcaecati incidunt eum veniam. Perspiciatis aliquid vitae sunt quo mollitia pariatur ipsam dolor natus provident illum eveniet inventore similique, quae sapiente non ratione repellendus distinctio repellat eius maxime, ab quasi at hic eaque. Modi animi culpa assumenda laudantium consectetur quis inventore numquam tempore illum placeat ut ducimus ad quia, possimus ullam aliquam molestias natus hic fugit veritatis commodi ipsum excepturi quos. Reprehenderit, maxime beatae. Labore, at deleniti?</p>
+            <h3>Love from Blake</h3>
+        </div>
     </div>
+    <dialog class="send-message" open>
+        <h2>Let Blake know you completed the Maori Memory Game</h2>
+        <a href="whatsapp://send?text=Hello%20World!">Hello, world!</a>
+    </dialog>
 </body>
 </html>

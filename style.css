@@ -15,85 +15,162 @@ body {
     width: 100%;
     overflow: hidden;
     font-family: "DM Sans", sans-serif;
+}
+
+button, .thumb-track, .tile-inner{cursor: pointer;}
+
+.flex {display: flex;}
+
+.wrapper {
+    --padding: 1.5rem;
+    position: fixed;
+    inset: 0;
     overflow: hidden;
+    flex-direction: column;
+    padding: var(--padding);
+    align-items: center;
+    gap: 1rem;
 }
 
 .game-container {
     display: flex;
     justify-content: center;
     width: 100%;
-    padding: 1.75rem;
+    max-width: 350px;
+    border-radius: .25rem;
+    filter: drop-shadow(0 0.125rem 0.125rem rgba(0,0,0,0.5));
+    transition: filter var(--transition-time) ease;
+}
+
+.game-container:has(.reveal) {
+    filter: drop-shadow(0 0.125rem 0.125rem rgba(0,0,0,0));
 }
 
 .tiles {
     position: relative;
+    perspective: 400px;
     width: 100%;
     aspect-ratio: 1 / 1;
-    perspective: 400px;
 }
 
-.tiles > .tile::before {
-    content: '';
+.fullscreen-image {
     position: absolute;
+    pointer-events: none;
     inset: 0;
-    background: var(--bg-colour);
-    mix-blend-mode: screen;
-    transition: all 3s ease;
-    transform-origin: var(--transform-origin);
-    backface-visibility: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    background: transparent;
+    z-index: 50;
+    opacity: 0;
+    transition: 500ms ease opacity;
 }
+
+.fullscreen-image.active {opacity: 1;}
+
+.fullscreen-image > * {
+    background-image: var(--tile-image);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.fullscreen-image > div:last-child {transform: scaleX(-1);}
 
 .tiles > .tile {
-    --flip: 180deg;
-
+    --border-radius: .5rem;
+    --transition-time: 500ms;
     position: absolute;
     aspect-ratio: 1 / 1;
-    border-radius: .25rem;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-family: sans-serif;
-    font-size: 2rem;
-
-    border: 1px solid;
-    background-size: var(--image-size);
-    background-position: var(--tile-offset);
-    background-repeat: repeat-x;
 
     cursor: pointer;
 
-    transform: rotate(var(--rotation, 0deg)) rotateY(var(--flip, 0deg));
     transform-style: preserve-3d;
     transform-origin: var(--transform-origin);
-    backface-visibility: visible;
-    transition: transform 500ms ease;
+    
+    border-radius: var(--border-radius);
+    border-width: 0px;
+    border-color: transparent;
+
+    transition: var(--transition-time) ease all;
+
+    background: transparent;
+    border: none;
 }
 
-.tile.active {--flip: 0deg}
+.tile.active .tile-inner {
+    --flip: 0deg;
+}
 
-.tile::after {
+/* default = face-down */
+.tile .tile-inner {
+    --flip: 180deg;
+}
+
+.tile.reveal {
+    --border-radius: 0rem;
+}
+
+.tile-inner {
+    position: absolute;
+    inset: 0;
+
+    transform-style: preserve-3d;
+    transform: rotate(var(--rotation, 0deg)) rotateY(var(--flip));
+    transition: transform var(--transition-time) ease;
+    border-radius: var(--border-radius);
+}
+
+.tile-inner::before {
     content: '';
     position: absolute;
     inset: 0;
 
-    background: red;
-    border-radius: .5rem;
+    /* IMAGE */
+    background-image: var(--tile-image);
+    background-size: var(--image-size);
+    background-position: var(--tile-offset);
+    background-repeat: repeat-x;
+    border-radius: var(--border-radius);
+    border-width: 0px;
+    border-color: transparent;
 
-    transform: rotateY(180deg);
-    transform-origin: var(--transform-origin);
+    /* COLOUR OVERLAY */
+    background-color: var(--bg-colour);
+    background-blend-mode: screen;
+
     backface-visibility: hidden;
+
+    transition: all var(--transition-time) ease;
 }
 
-.tile.reveal {
-    border-radius: 0rem;
-    border-color: rgba(0,0,0,0);
-    scale: 1.03;
+.tile-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+
+    background: radial-gradient(
+        rgb(36, 36, 90),
+        rgb(25, 25, 71)
+    );
+
+    border-radius: var(--border-radius);
+    border-width: 0px;
+    border-color: transparent;
+
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    transition: all var(--transition-time) ease;
 }
 
-.reversed.reveal {
-    transform: scaleX(-1) rotate(var(--rotation)) rotateY(var(--flip, 0deg));
+.tile.reveal .tile-inner {
+    border-radius: 0;
+    border-color: transparent;
+    transform: rotate(var(--rotation, 0deg));
+    box-shadow: none;
+}
+
+.tile.reversed.reveal > .tile-inner {
+    transform:
+        scaleX(-1)
+        rotate(var(--rotation));
 }
 
 dialog {
@@ -111,7 +188,7 @@ dialog {
     transition: transform 1s ease;
 }
 
-dialog:open {
+dialog[open] {
     transform: translateY(0vh);
 }
 
@@ -150,7 +227,7 @@ dialog > * {
 
 dialog > h3 {margin: 0; height: fit-content;}
 
-.start-game {
+button {
     margin: auto auto 0 auto;
     padding: 0.5rem 1.5rem;
     font-size: 1.75rem;
@@ -161,4 +238,88 @@ dialog > h3 {margin: 0; height: fit-content;}
     box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.25);
     border: 1px solid rgba(0,0,0,0.5);
     border-radius: .5rem;
+}
+
+.card-container {
+    padding: 1.125rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    max-height: 30em;
+    border-radius: .5rem;
+    overflow: auto;
+    background: rgb(226, 226, 226);
+}
+
+.card-container > h3 {
+    margin-top: auto;
+}
+
+.end-game {
+    margin: auto;
+    
+    height: fit-content;
+    border-radius: .5rem;
+    box-shadow: 0 0.5rem 0.5rem rgba(0,0,0,0.3),
+                0 0 0 0vw rgba(0,0,0,0);
+    transition: 1s ease all;
+}
+
+.end-game[open] {
+    box-shadow: 0 0.5rem 0.5rem rgba(0,0,0,0.3),
+                0 0 0 100vw rgba(0,0,0,0.2);
+}
+
+dialog::backdrop {
+    background: transparent;
+}
+
+.restart {display: none}
+.restart.active {display: flex}
+
+.end-game > button {font-size: 1.4rem}
+
+.controls {justify-content: center; gap: 1rem;}
+
+.controls > button {
+    font-size: 1.125rem;
+    margin: 0;
+    padding: .25rem .75rem;
+}
+
+@media (min-width: 680px) {
+    .wrapper {
+        margin: auto;
+        width: 680px;
+        height: 100vh;
+        gap: 3em;
+        justify-content: center;
+    }
+
+    .menu {
+        inset: 0;
+        left: 50%;
+        translate: -50% 0%;
+        width: 100%;
+        max-width: 40em;
+        align-items: center;
+    }
+
+    .menu > .slider > .thumb-track {
+        transition: filter 500ms ease,
+        background 500ms ease,
+        left 0ms ease;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        font-size: 90%;
+    }
+
+    ul > li, .menu > span, .card-container p {font-size: 1rem;}
+
+    .difficulties > span {font-size: 3rem;}
+
 }
