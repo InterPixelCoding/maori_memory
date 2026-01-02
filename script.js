@@ -476,7 +476,7 @@ function end_game_logic(grid_size, tiles, obj, res) {
                 activate($(".fullscreen-image"));
                 setTimeout(() => {
                     activate($(".send-message"));
-                    const msg_text = encodeURIComponent(`I ${res.success ? "completed": "attempted"} the ${obj.gamemode} Level of the Maori Memory Game!`);
+                    const msg_text = encodeURIComponent(`I ${res.success ? "completed": "attempted"} the ${obj.gamemode} Level on the Maori Memory Game!`);
                     $("a.send-message-btn").href = `whatsapp://send?text=${msg_text}`;
                 }, 2000);
             })
