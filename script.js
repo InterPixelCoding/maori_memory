@@ -420,6 +420,30 @@ function reveal_remaining() {
     })
 }
 
+function end_game_logic(grid_size, tiles, obj, res) {
+    end_game.showModal();
+    reveal_btn.onclick = () => {
+        end_game.close();
+        reveal_remaining();
+        setTimeout(() => {
+            reveal_tiles(grid_size, tiles, obj)
+            .then(() => {
+                activate($(".fullscreen-image"));
+                setTimeout(() => {
+                    activate($(".send-message"));
+                    const msg_text = encodeURIComponent(`I ${res.success ? "completed": "attempted"} the ${obj.gamemode} difficulty of the Maori Memory Game!`);
+                    $("a.send-message-btn").href = `whatsapp://send?text=${msg_text}`;
+                }, 2000);
+            })
+        }, 1000);
+    };
+}
+
+function encourage() {
+    $(".end-game > h2").textContent = "Haven't got it in you? Perhaps restart with an easier difficulty. Otherwise, I hope things come together for you in 2026!";
+    activate($(".end-game > .restart"));
+}
+
 starting_menu()
 .then((res) => {game_setup(res)})
 
@@ -427,6 +451,7 @@ function game_setup(obj) {
     let grid_size = obj.grid_size;
     let tiles = mirrored_arr(grid_size);
     let tile_order = Array.from(tiles.keys());
+    
     shuffle(tile_order);
     generate_tiles(grid_size, tiles, testing);
     display_tiles(grid_size, tile_order, obj, tiles)
@@ -434,22 +459,8 @@ function game_setup(obj) {
         modal.close();
         start_game(grid_size, obj)
         .then((res) => {
-            if(!res.success) {
-                $(".end-game > h2").textContent = "Haven't got it in you? Perhaps restart with an easier difficulty. Otherwise, I hope things come together for you in 2026!";
-                activate($(".end-game > .restart"));
-            }
-            end_game.showModal();
-            reveal_btn.onclick = () => {
-                end_game.close();
-                reveal_remaining();
-                setTimeout(() => {
-                    reveal_tiles(grid_size, tiles, obj)
-                    .then(() => {
-                        activate($(".fullscreen-image"));
-                        
-                    })
-                }, 1000);
-            };
+            if(!res.success) encourage();
+            end_game_logic(grid_size, tiles, obj, res);
         });
     })
 }

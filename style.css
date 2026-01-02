@@ -17,7 +17,7 @@ body {
     font-family: "DM Sans", sans-serif;
 }
 
-button, .thumb-track, .tile-inner{cursor: pointer;}
+button, .thumb-track, .tile-inner, a {cursor: pointer;}
 
 .flex {display: flex;}
 
@@ -173,7 +173,7 @@ button, .thumb-track, .tile-inner{cursor: pointer;}
         rotate(var(--rotation));
 }
 
-dialog {
+dialog, .send-message {
     position: fixed;
     height: 100%;
     display: flex;
@@ -227,7 +227,7 @@ dialog > * {
 
 dialog > h3 {margin: 0; height: fit-content;}
 
-button {
+button, a.send-message-btn {
     margin: auto auto 0 auto;
     padding: 0.5rem 1.5rem;
     font-size: 1.75rem;
@@ -238,6 +238,12 @@ button {
     box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.25);
     border: 1px solid rgba(0,0,0,0.5);
     border-radius: .5rem;
+}
+
+a.send-message-btn {
+    margin: unset;
+    text-decoration: none;
+    font-size: 1.5rem;
 }
 
 .card-container {
@@ -286,6 +292,25 @@ dialog::backdrop {
     font-size: 1.125rem;
     margin: 0;
     padding: .25rem .75rem;
+}
+
+.send-message {
+    justify-content: center;
+    max-height: fit-content;
+    min-height: 50%;
+    inset: unset;
+    bottom: 0;
+    width: 100%;
+    max-height: fit-content;
+    transform: translateY(100vh);
+    text-align: center;
+    gap: 2rem;
+}
+
+.send-message.active {transform: translateY(0vh);}
+
+.send-message > h2 {
+    font-size: 1.5rem;
 }
 
 @media (min-width: 680px) {
