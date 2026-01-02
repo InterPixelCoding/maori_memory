@@ -19,6 +19,16 @@ body {
 
 button, .thumb-track, .tile-inner, a {cursor: pointer;}
 
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .flex {display: flex;}
 
 .wrapper {
@@ -242,6 +252,7 @@ button, a.send-message-btn {
 
 a.send-message-btn {
     margin: unset;
+    margin-inline: auto;
     text-decoration: none;
     font-size: 1.5rem;
 }
@@ -255,7 +266,9 @@ a.send-message-btn {
     max-height: 30em;
     border-radius: .5rem;
     overflow: auto;
-    background: rgb(226, 226, 226);
+    background: rgb(236, 236, 236);
+    box-shadow: inset 0 0.25rem 0.5rem rgba(0,0,0,0.2),
+                0 0.75rem 0.5rem -0.5rem rgba(0,0,0,0.2);
 }
 
 .card-container > h3 {
@@ -296,13 +309,13 @@ dialog::backdrop {
 
 .send-message {
     justify-content: center;
-    max-height: fit-content;
-    min-height: 50%;
+    height: fit-content;
     inset: unset;
     bottom: 0;
     width: 100%;
     max-height: fit-content;
     transform: translateY(100vh);
+    box-shadow: 0rem 1rem 3rem 3rem white;
     text-align: center;
     gap: 2rem;
 }

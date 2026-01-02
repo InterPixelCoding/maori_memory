@@ -90,6 +90,51 @@ generate_gamemode_info();
 
 const gamemode_spans = document.querySelectorAll(".difficulties > span");
 
+async function get_data(link, API_KEY = "AIzaSyAYlUEDXUhh4W-8heoe6cgXwrI2n83Xggc") {
+    if (!API_KEY) {
+        throw new Error("API_KEY is required");
+    }
+
+    const spreadsheet_id_match = link.match(/\/d\/([a-zA-Z0-9-_]+)/);
+
+    if (!spreadsheet_id_match) {
+        throw new Error("Invalid Google Sheets link");
+    }
+
+    const spreadsheet_id = spreadsheet_id_match[1];
+
+    const endpoint =
+        `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values:batchGet` +
+        `?ranges=A:ZZZ&majorDimension=ROWS&key=${API_KEY}`;
+
+    const response = await fetch(endpoint);
+
+    if (!response.ok) {
+        throw new Error(`Google Sheets API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const rows = data.valueRanges?.[0]?.values ?? [];
+
+    if (rows.length === 0) return [];
+
+    const headers = rows[0].map(h =>
+        h
+            .toString()
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "_")
+    );
+
+    return rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((key, i) => {
+            obj[key] = row[i] ?? "";
+        });
+        return obj;
+    });
+}
+
 function generate_gamemode_info() {
     gamemodes.forEach(function(gamemode, index) {
         const span = el("span");
@@ -431,7 +476,7 @@ function end_game_logic(grid_size, tiles, obj, res) {
                 activate($(".fullscreen-image"));
                 setTimeout(() => {
                     activate($(".send-message"));
-                    const msg_text = encodeURIComponent(`I ${res.success ? "completed": "attempted"} the ${obj.gamemode} difficulty of the Maori Memory Game!`);
+                    const msg_text = encodeURIComponent(`I ${res.success ? "completed": "attempted"} the ${obj.gamemode} Level of the Maori Memory Game!`);
                     $("a.send-message-btn").href = `whatsapp://send?text=${msg_text}`;
                 }, 2000);
             })
@@ -443,6 +488,14 @@ function encourage() {
     $(".end-game > h2").textContent = "Haven't got it in you? Perhaps restart with an easier difficulty. Otherwise, I hope things come together for you in 2026!";
     activate($(".end-game > .restart"));
 }
+
+get_data("https://docs.google.com/spreadsheets/d/1cLnXZ2r3-YVcnbMKxuJyP2C69IJeeHjaGbWn8A0qabY/edit")
+.then(obj => {
+    const str = window.location.href.split("?=").pop();
+    const row = obj.filter(el => el.key === str)[0];
+    $(".card-container > h2").textContent = row.dear;
+    $(".card-container > p.message").textContent = row.message;
+})
 
 starting_menu()
 .then((res) => {game_setup(res)})
