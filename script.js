@@ -497,31 +497,6 @@ function encourage() {
     activate($(".end-game > .restart"));
 }
 
-get_data("https://docs.google.com/spreadsheets/d/1cLnXZ2r3-YVcnbMKxuJyP2C69IJeeHjaGbWn8A0qabY/edit")
-.then(obj => {
-    const str = window.location.href.split("?=").pop();
-    const row = obj.filter(el => el.key === str)[0];
-    $(".card-container > h2").textContent = `Dear ${row.dear},`;
-    $(".card-container > p.message").textContent = row.message;
-})
-
-if(!localStorage.getItem("is_card_read")) {
-    activate($(".card.wrapper"));
-    $(".go-to-game").onclick = () => {
-        localStorage.setItem("is_card_read", true)
-        deactivate(card_wrapper)
-        menu_dialog.showModal();
-        starting_menu()
-        .then((res) => {game_setup(res)})
-    }
-} else {
-    localStorage.setItem("is_card_read", false);
-    deactivate(card_wrapper);
-    menu_dialog.showModal();
-    starting_menu()
-    .then((res) => {game_setup(res)})
-}
-
 function game_setup(obj) {
     let grid_size = obj.grid_size;
     let tiles = mirrored_arr(grid_size);
@@ -542,4 +517,34 @@ function game_setup(obj) {
 }
 
 document.querySelectorAll(".restart").forEach(restart => {restart.onclick = () => window.location.reload()})
+
+function main() {
+    $(".see-card").onclick = () => {localStorage.removeItem("is_card_read"); window.location.reload()}
+    if(!localStorage.getItem("is_card_read")) {
+        activate($(".card.wrapper"));
+        $(".go-to-game").onclick = () => {
+            localStorage.setItem("is_card_read", "1")
+            deactivate(card_wrapper)
+            menu_dialog.showModal();
+            starting_menu()
+            .then((res) => {game_setup(res)})
+        }
+        } else {
+            localStorage.removeItem("is_card_read");
+            deactivate(card_wrapper);
+            menu_dialog.showModal();
+            starting_menu()
+            .then((res) => {game_setup(res)})
+    }
+}
+
+get_data("https://docs.google.com/spreadsheets/d/1cLnXZ2r3-YVcnbMKxuJyP2C69IJeeHjaGbWn8A0qabY/edit")
+.then(obj => {
+    const str = window.location.href.split("?=").pop();
+    const row = obj.filter(el => el.key === str)[0];
+    $(".card-container > h2").textContent = `Dear ${row.dear},`;
+    $(".card-container > p.message").textContent = row.message;
+
+    main();
+})
 

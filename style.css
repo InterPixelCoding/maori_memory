@@ -409,6 +409,10 @@ dialog::backdrop {
     font-size: 1.5rem;
 }
 
+.see-card {
+    font-size: 1rem;
+}
+
 @media (min-width: 680px) {
     .wrapper {
         margin: auto;
@@ -442,5 +446,10 @@ dialog::backdrop {
     ul > li, .menu > span, .card-container p {font-size: 1rem;}
 
     .difficulties > span {font-size: 3rem;}
+}
 
+@media (max-height: 620px) {
+    body {
+        scale: 0.9;
+    }
 }
