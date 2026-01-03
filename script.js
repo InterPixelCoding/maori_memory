@@ -453,7 +453,7 @@ async function start_game(grid_size, obj) {
                             ])
                             currently_flipped = [];
                             is_interactive = true;
-                        }, 1000);
+                        }, 1500);
                     }
                 }
             } else {
