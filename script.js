@@ -405,6 +405,12 @@ async function starting_menu() {
         start_game_button.addEventListener("click", () => {
             resolve(difficulty);
         });
+
+        slider.addEventListener("pointerdown", (e) => {
+        if (e.target === thumb_track) return;
+        e.preventDefault();
+        update_slider(e.clientX, true);
+    });
     });
 }
 

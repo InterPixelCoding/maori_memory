@@ -46,24 +46,31 @@ button, .thumb-track, .tile-inner, a {cursor: pointer;}
     gap: 1.5rem;
 }
 
-.game-container {
+.game-container-wrapper {
     display: flex;
     margin-inline: auto;
-    justify-content: center;
     width: 100%;
     max-width: 350px;
+    justify-content: center;
     align-items: center;
+    transition: translate 1s ease;
+}
+
+.game-container {
+    width: 100%;
+    aspect-ratio: 1 / 1;
     border-radius: .25rem;
     filter: drop-shadow(0 0.125rem 0.125rem rgba(0,0,0,0.5));
-    transition: filter var(--transition-time) ease,
-                translate 1s ease;
+    transition: filter var(--transition-time) ease;
 }
 
 .game-container:has(.reveal) {
     filter: drop-shadow(0 0.125rem 0.125rem rgba(0,0,0,0));
 }
 
-body:has(.send-message.active) .game-container {translate: 0 -10%;}
+body:has(.send-message.active) .game-container-wrapper {
+    translate: 0 -20vh;
+}
 
 .tiles {
     position: relative;
@@ -296,7 +303,7 @@ a.send-message-btn {
     transform: translateY(-100vh);
     inset: 0;
     z-index: 50;
-    transition: 500ms 1s ease transform;
+    transition: 1s ease transform;
 }
 
 .card.wrapper.active {
