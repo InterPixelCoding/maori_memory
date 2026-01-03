@@ -82,9 +82,12 @@ const thumb_track = $(".slider > .thumb-track");
 const slider = thumb_track.parentElement;
 const start_game_button = $(".start-game")
 const info_padding = 10;
-const modal = $("dialog.menu")
+const menu_dialog = $("dialog.menu")
 const end_game = $(".end-game");
 const reveal_btn = $(".reveal-btn");
+const card_wrapper = $(".card.wrapper");
+
+$(".card.wrapper").style.setProperty("--bg-image", `url(${image_src})`);
 
 generate_gamemode_info();
 
@@ -405,7 +408,6 @@ async function starting_menu() {
     });
 }
 
-
 async function start_game(grid_size, obj) {
     return new Promise((resolve) => {
         let pairs_flipped = [];
@@ -493,12 +495,26 @@ get_data("https://docs.google.com/spreadsheets/d/1cLnXZ2r3-YVcnbMKxuJyP2C69IJeeH
 .then(obj => {
     const str = window.location.href.split("?=").pop();
     const row = obj.filter(el => el.key === str)[0];
-    $(".card-container > h2").textContent = row.dear;
+    $(".card-container > h2").textContent = `Dear ${row.dear},`;
     $(".card-container > p.message").textContent = row.message;
 })
 
-starting_menu()
-.then((res) => {game_setup(res)})
+if(!localStorage.getItem("is_card_read")) {
+    activate($(".card.wrapper"));
+    $(".go-to-game").onclick = () => {
+        localStorage.setItem("is_card_read", true)
+        deactivate(card_wrapper)
+        menu_dialog.showModal();
+        starting_menu()
+        .then((res) => {game_setup(res)})
+    }
+} else {
+    localStorage.setItem("is_card_read", false);
+    deactivate(card_wrapper);
+    menu_dialog.showModal();
+    starting_menu()
+    .then((res) => {game_setup(res)})
+}
 
 function game_setup(obj) {
     let grid_size = obj.grid_size;
@@ -509,7 +525,8 @@ function game_setup(obj) {
     generate_tiles(grid_size, tiles, testing);
     display_tiles(grid_size, tile_order, obj, tiles)
     .then(() => {
-        modal.close();
+        menu_dialog.close();
+        activate($(".controls"));
         start_game(grid_size, obj)
         .then((res) => {
             if(!res.success) encourage();

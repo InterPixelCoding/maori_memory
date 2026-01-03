@@ -9,9 +9,17 @@
     <title>Maori Memory</title>
 </head>
 <body>
-    <dialog class="menu" open>
+    <div class="flex wrapper card">
+        <div class="card-container">
+            <h2>Dear Sir / Madam</h2>
+            <p class="message"></p>
+            <h3>Love from Blake</h3>
+            <button class="go-to-game">Go to Game</button>
+        </div>
+    </div>
+    <dialog class="menu">
         <h1>Welcome to Blake's Maori Memory Game!</h1>
-        <span>Find the matching tiles by flipping two over at a time. Select your difficulty below to begin!</span>
+        <span>Find the matching tiles by flipping two over at a time. Select your difficulty by sliding the slider below</span>
         <div class="difficulties"></div>
         <div class="slider">
             <div class="thumb-track"></div>
@@ -21,7 +29,7 @@
         </div>
         <button class="start-game">Start Game</button>
     </dialog>
-    <div class="flex wrapper">
+    <div class="flex wrapper game-container">
         <div class="game-container">
             <div class="tiles" data-grid-size="6" data-grid-gap="" data-src="./tiles/picture.png"></div>
         </div>
@@ -29,17 +37,12 @@
             <button class="restart active">Change difficulty</button>
             <button class="give-up">Give Up</button>
         </div>
-        <dialog class="end-game">
-            <h2>Congratulations on Completing the Maori Memory Game! <br> But wait... there's more!</h2>
-            <button class="restart">Change difficulty</button>
-            <button class="reveal-btn">Click to reveal the bigger picture</button>
-        </dialog>
-        <div class="card-container">
-            <h2>Dear Sir / Madam</h2>
-            <p class="message"></p>
-            <h3>Love from Blake</h3>
-        </div>
     </div>
+    <dialog class="end-game">
+        <h2>Congratulations on Completing the Maori Memory Game! <br> But wait... there's more!</h2>
+        <button class="restart">Change difficulty</button>
+        <button class="reveal-btn">Click to reveal the bigger picture</button>
+    </dialog>
     <div class="send-message">
         <h2>Thanks for playing! Let Blake know you played the Maori Memory Game</h2>
         <a class="send-message-btn" href="#">Send Message on Whatsapp</a>
